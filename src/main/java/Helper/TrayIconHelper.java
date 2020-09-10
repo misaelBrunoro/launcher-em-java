@@ -8,7 +8,8 @@ import java.net.URL;
 public class TrayIconHelper {
     private TrayIcon trayIcon;
 
-    public void GenerateIcon( ) {
+    // GERA O ICONE QUE FICA NA BANDEJA
+    public void GenerateIcon( ) throws AWTException {
 
         if (SystemTray.isSupported()) {
             SystemTray tray = SystemTray.getSystemTray();
@@ -29,21 +30,18 @@ public class TrayIconHelper {
             popup.addSeparator();
 
             //criando um objeto do tipo TrayIcon
-            this.trayIcon = new TrayIcon(this.getIcon("icon"), "Launcher OnContabil", popup);
+            this.trayIcon = new TrayIcon(this.getIcon("azul"), "Launcher OnContabil", popup);
             this.trayIcon.setImageAutoSize(true);
 
             //Tratamento de erros
-            try {
-                tray.add(this.trayIcon);
-            } catch (AWTException e) {
-                System.err.println("Erro, TrayIcon não pode ser adicionado.");
-            }
+            tray.add(this.trayIcon);
         } else {
             //Caso o item  System Tray não for suportado
             JOptionPane.showMessageDialog(null,"recurso ainda não esta disponível pra o seu sistema");
         }
     }
 
+    // SETA MENSAGEM A SER MOSTRADA AO PASSAR MOUSE
     public void setTooltip (String mensagem) {
         this.trayIcon.setToolTip(mensagem);
     }
@@ -53,6 +51,7 @@ public class TrayIconHelper {
         return Toolkit.getDefaultToolkit().getImage(path);
     }
 
+    // SETA IMAGEM DO ICONE
     public void setIcon(String iconName) {
         Image newImage = getIcon(iconName);
         this.trayIcon.setImage(newImage);

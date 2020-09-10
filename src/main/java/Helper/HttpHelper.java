@@ -6,26 +6,24 @@ import Utils.Utils;
 import org.apache.http.*;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+
 import static Utils.Consts.*;
 
-public class HttpHelper extends Utils {
+public class HttpHelper {
 
     // REQUEST PARA RETORNAR VERSÃO DO SERVIDOR
-    public String readWebVersion() {
+    public String readWebVersion(TrayIconHelper trayIconHelper, FileHelper fileHelper) throws IOException {
+        trayIconHelper.setTooltip("Verificando atualizações...");
         HttpClient httpclient = HttpClients.createDefault();
-        HttpGet httpget = new HttpGet(this.getFileHelper().getConfiguration("consultVersion"));
-        ProxyConfig proxyFile = this.getFileHelper().readProxyFile();
+        HttpGet httpget = new HttpGet(fileHelper.getConfiguration("consultVersion"));
+        ProxyConfig proxyFile = fileHelper.readProxyFile();
         if (proxyFile != null) {
-            HttpHost proxy = new HttpHost(proxyFile.getHostname(), proxyFile.getPort(), "http");
+            HttpHost proxy = new HttpHost(proxyFile.getHostname(), proxyFile.getPort(), proxyFile.getSchema());
             RequestConfig config = RequestConfig.custom().setProxy( proxy ).build();
             httpget.setConfig(config);
         }
@@ -38,26 +36,30 @@ public class HttpHelper extends Utils {
                 return content;
             }
             return null;
-        } catch (IOException e) {
-            return e.getMessage();
         } finally {
             httpget.releaseConnection();;
         }
     }
 
-    // BAIXAR ULTIMA VERSÃO DO SERVIDOR
-    public void downloadNewVersion() {
-        File myFile = new File(programPath);
-        CloseableHttpClient client = HttpClients.createDefault();
-        try (CloseableHttpResponse response = client.execute(new HttpGet(this.getFileHelper().getConfiguration("downloadVersion")))) {
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                try (FileOutputStream outstream = new FileOutputStream(myFile)) {
-                    entity.writeTo(outstream);
-                }
+    // REQUEST PARA BAIXAR ULTIMA VERSÃO DO SERVIDOR E SALVAR
+    public void downloadNewVersion(TrayIconHelper trayIconHelper, FileHelper fileHelper) throws IOException {
+        trayIconHelper.setIcon("amarelo");
+        trayIconHelper.setTooltip("Efetuando download de nova versão...");
+        HttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpget = new HttpGet(fileHelper.getConfiguration("downloadVersion"));
+        HttpResponse response = httpclient.execute(httpget);
+        HttpEntity entity = response.getEntity();
+        if (entity != null) {
+            File file = new File(downloadPath);
+            file.createNewFile();
+            BufferedInputStream bis = new BufferedInputStream(entity.getContent());
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
+            int inByte;
+            while((inByte = bis.read()) != -1) {
+                bos.write(inByte);
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
+            bis.close();
+            bos.close();
         }
     }
 }

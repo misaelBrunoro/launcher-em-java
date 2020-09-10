@@ -3,14 +3,10 @@ package Model;
 public class ProxyConfig {
     private String hostname;
     private int port;
+    private String schema;
 
     public ProxyConfig() {
 
-    }
-
-    public ProxyConfig(String hostname, int port) {
-        this.hostname = hostname;
-        this.port = port;
     }
 
     public String getHostname() {
@@ -27,5 +23,13 @@ public class ProxyConfig {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 }
