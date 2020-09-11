@@ -11,6 +11,10 @@ public final class Consts {
 
     public static final String downloadPath = programPath + "/oncontabilService.jar";
 
+    public static final String logFolderPath = programPath + "/logs";
+
+    public static final String logFilePath = logFolderPath + "/launcherLog.log";
+
     private Consts() {
         throw new AssertionError();
     }

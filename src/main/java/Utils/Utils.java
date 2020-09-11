@@ -2,15 +2,17 @@ package Utils;
 
 import Helper.FileHelper;
 import Helper.HttpHelper;
+import Helper.LogHelper;
 import Helper.TrayIconHelper;
 
 import java.io.IOException;
 
-// ESSA CLASSE É RESPONSÁVEL PELO SINGLETON DOS HELPERS
+// ESSA CLASSE É RESPONSAVEL PELO SINGLETON DOS HELPERS
 public class Utils {
     private FileHelper fileUtil;
     private HttpHelper httpUtil;
     private TrayIconHelper trayIconUtil;
+    private LogHelper logHelper;
 
     public FileHelper getFileHelper() throws IOException {
         if (this.fileUtil == null){
@@ -31,5 +33,16 @@ public class Utils {
             this.trayIconUtil = new TrayIconHelper();
         }
         return trayIconUtil;
+    }
+
+    public LogHelper getLogHelper() {
+        try {
+            if (this.logHelper == null) {
+                this.logHelper = new LogHelper();
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return logHelper;
     }
 }
